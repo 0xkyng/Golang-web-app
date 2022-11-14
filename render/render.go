@@ -8,25 +8,44 @@ import (
 	// "log"
 	"net/http"
 	"text/template"
+
+	"github.com/codekyng/go-web/pkg/config"
 )
+
+
+var functions = template.FuncMap{
+
+}
+
+var app *config.AppConfig
+
+// NewTemplates sets the config for the template package
+func NewTemplates(a *config.AppConfig) {
+	app = a
+
+}
 
 // RenderTemplate renders template using html/template
 func RenderTemplate(w http.ResponseWriter, tmpl string) {
-	// create a template cache
-	templateCache, err := CraeteTemplateCache()
-	if err != nil {
-		log.Fatal(err)
-	}
+	// get the template cache from the app config
+
+	templateCache := app.TemplateCache
+
+
+	// templateCache, err := CraeteTemplateCache()
+	// if err != nil 
+	// 	log.Fatal(err)
+	// }
 
 	// get requested from cache
 	template, ok := templateCache[tmpl]
 	if !ok {
-		log.Fatal(err)
+		log.Fatal("Could not get template from template cache")
 	}
 
 	buf := new(bytes.Buffer)
 
-	err = template.Execute(buf, nil)
+	err := template.Execute(buf, nil)
 	if err != nil {
 		log.Println(err)
 	}
