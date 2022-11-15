@@ -27,9 +27,16 @@ func NewTemplates(a *config.AppConfig) {
 
 // RenderTemplate renders template using html/template
 func RenderTemplate(w http.ResponseWriter, tmpl string) {
+
+	var templateCache map[string]*template.Template
+	if app.Usedcache {
+		templateCache = app.TemplateCache
+	} else {
+		templateCache, _ = CraeteTemplateCache()
+	}
 	// get the template cache from the app config
 
-	templateCache := app.TemplateCache
+	templateCache = app.TemplateCache
 
 
 	// templateCache, err := CraeteTemplateCache()
