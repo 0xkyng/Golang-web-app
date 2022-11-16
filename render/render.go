@@ -2,14 +2,14 @@ package render
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 	"path/filepath"
-
-	// "log"
 	"net/http"
 	"text/template"
 
 	"github.com/codekyng/go-web/pkg/config"
+	"github.com/codekyng/go-web/pkg/models"
 )
 
 
@@ -25,8 +25,13 @@ func NewTemplates(a *config.AppConfig) {
 
 }
 
+
+func AddDefaultData(td *models.TemplateData) *models.TemplateData {
+
+	 return td
+}
 // RenderTemplate renders template using html/template
-func RenderTemplate(w http.ResponseWriter, tmpl string) {
+func RenderTemplate(w http.ResponseWriter, tmpl string, td *models.TemplateData) {
 
 	var templateCache map[string]*template.Template
 	if app.Usedcache {
@@ -39,11 +44,6 @@ func RenderTemplate(w http.ResponseWriter, tmpl string) {
 	templateCache = app.TemplateCache
 
 
-	// templateCache, err := CraeteTemplateCache()
-	// if err != nil 
-	// 	log.Fatal(err)
-	// }
-
 	// get requested from cache
 	template, ok := templateCache[tmpl]
 	if !ok {
@@ -52,15 +52,14 @@ func RenderTemplate(w http.ResponseWriter, tmpl string) {
 
 	buf := new(bytes.Buffer)
 
-	err := template.Execute(buf, nil)
-	if err != nil {
-		log.Println(err)
-	}
+	td = AddDefaultData(td)
 
-	// rrender the template
-	_, err = buf.WriteTo(w)
+	_= template.Execute(buf, td)
+
+	
+	_, err := buf.WriteTo(w)
 	if err != nil {
-		log.Println(err)
+		fmt.Println("error writing template to browser", err)
 
 	}
 
@@ -103,48 +102,3 @@ func CraeteTemplateCache() (map[string]*template.Template, error) {
 
 }
 
-// var tc = make(map[string]*template.Template)
-
-// func RenderTemplate(w http.ResponseWriter, t string) {
-// 	var tmpl *template.Template
-// 	var err error
-
-// 	// Check to see if we already have the template in our cache
-// 	_, inMap := tc[t]
-// 	if !inMap {
-// 		// need to craete a template
-// 		log.Println("creating template and adding to cache")
-// 		err = craeteTemplateCache(t)
-// 		if err != nil {
-// 			log.Println(err)
-// 		}
-// 	} else {
-// 		// we have the template in the cache
-// 		log.Println("ussing cache template")
-// 	}
-
-// 	tmpl = tc[t]
-
-// 	err = tmpl.Execute(w, nil)
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
-// }
-
-// func craeteTemplateCache(t string) error {
-// 	templates := []string{
-// 		fmt.Sprintf("./templates/%s", t),
-// 		"./templates/base.layout.html",
-// 	}
-
-// 	// parse the template
-// 	tmpl, err := template.ParseFiles(templates...)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	// add template to cache map
-// 	tc[t] = tmpl
-
-// 	return nil
-// }

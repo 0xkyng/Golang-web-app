@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/codekyng/go-web/pkg/config"
+	"github.com/codekyng/go-web/pkg/models"
 	"github.com/codekyng/go-web/render"
 )
 
@@ -26,19 +27,26 @@ func NewRepo (a *config.AppConfig) *Repository {
 
 // NewHandlers sets the repository for the handlers
 func NewHandlers (r *Repository) {
-	Repo =r
+	Repo = r
 }
 
 // Home is the  home page handler
-func (m *Repository)Home(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "home.page.html")
-	
+func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
+	render.RenderTemplate(w, "home.page.html", &models.TemplateData{})
+
 
 }
 
 // About is the about page handler
-func  (m *Repository)About(w http.ResponseWriter, r *http.Request) {
-	render.RenderTemplate(w, "about.page.html")
+func  (m *Repository) About(w http.ResponseWriter, r *http.Request) {
+	// perfom some logic
+	stringMap := make(map[string]string)
+	stringMap["test"] ="Hello, again"
+
+	// send data to the templatte
+	render.RenderTemplate(w, "about.page.html", &models.TemplateData{
+		StringMap: stringMap,
+	})
 	
 
 }
