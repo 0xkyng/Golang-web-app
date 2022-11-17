@@ -5,13 +5,18 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
+	"github.com/alexedwards/scs/v2"
 	handlers "github.com/codekyng/go-web/pkg"
 	"github.com/codekyng/go-web/pkg/config"
 	"github.com/codekyng/go-web/render"
 )
 
 const portNumber = ":8080"
+
+var app config.AppConfig
+var session *scs.SessionManager
 
 // In other for a function to respond to a request from a web browser;
 // It has to handle two parameters;
@@ -20,7 +25,22 @@ const portNumber = ":8080"
 
 // main is the main application function
 func main() {
-	var app config.AppConfig
+
+	// change this to true when in production
+	app.InProduction = false
+
+	// 
+	// creating a session
+	session = scs.New()
+	session.Lifetime = 24 * time.Hour
+	session.Cookie.Persist = true
+	session.Cookie.SameSite = http.SameSiteLaxMode
+	session.Cookie.Secure = app.InProduction
+	// 
+
+	app.Session = session
+	
+
 
 	templateCache, err := render.CraeteTemplateCache()
 	if err != nil {
